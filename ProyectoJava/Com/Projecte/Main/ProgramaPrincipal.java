@@ -1,5 +1,5 @@
 package Com.Projecte.Main;
-import Com.Projecte.Josep.*;
+import Com.Projecte.Josep.Dadesjosep;
 public class ProgramaPrincipal {
     public static void main(String[] args) {
         inici();
