@@ -1,10 +1,9 @@
 package Com.Projecte.Main;
 
-import Com.Projecte.Josep.Dadesjosep;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Com.Projecte.Josep.Dadesjosep;
 import Com.Projecte.Alejandro.DatosAlejandro;
 import Com.Projecte.Alvaro.DatosAlvaro;
 import Com.Projecte.Raul.DatosRaul;
