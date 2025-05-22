@@ -2,13 +2,13 @@ package Com.Projecte.src.dev;
 
 import java.io.Serializable;
 
-public abstract class Persona implements Serializable{
+public abstract class Persona implements Serializable {
     protected String nombre;
     protected String Apellido;
     protected String email;
     protected String password;
     protected String poblacio;
-    protected Boolean rol=false;
+    protected Boolean rol = false;
     protected int FechaNacimiento;
     protected int id;
 
@@ -90,6 +90,24 @@ public abstract class Persona implements Serializable{
 
     public int getId() {
         return id;
+    }
+
+    public String toStringPaFicheros() {
+        return "" + getId() + "," + getNombre() + "," + getApellido() + "," + getEmail()
+                + "," + getPassword() + "," + getPoblacio() + "," + getRol()
+                + "," + getFechaNacimiento() + "";
+    }
+
+    public String toStringPaFicheros2() {
+        return "" + getId() + "," + getNombre() + "," + getApellido() + "," + getPoblacio() + ","
+                + getFechaNacimiento() + "";
+    }
+
+    @Override
+    public String toString() {
+        return "Persona [getNombre()=" + getNombre() + ", getApellido()=" + getApellido() + ", getEmail()=" + getEmail()
+                + ", getPassword()=" + getPassword() + ", getPoblacio()=" + getPoblacio() + ", getRol()=" + getRol()
+                + ", getFechaNacimiento()=" + getFechaNacimiento() + ", getId()=" + getId() + "]";
     }
 
 }
