@@ -38,30 +38,37 @@ public class Usuari extends Persona {
         } catch (Exception e) {
             System.out.println("Error de tipo " + e.toString());
         }
-        File ficheropersonal = new File(
-                "Com/Projecte/src/dades_" + usuario.getEmail() + "/" + usuario.getEmail() + ".txt");
 
-        try {
-            if (!ficheropersonal.exists()) {
-                ficheropersonal.getParentFile().mkdirs();
-                ficheropersonal.createNewFile();
+        CrearficheroUsuarioPersonal(usuario);
+    }
+
+    public static void CrearficheroUsuarioPersonal(Usuari usuario) {
+        String[] nombre = { "peliculasfavoritas", "actoresfavoritos", "directoresfavoritos" };
+        for (int i = 0; i < nombre.length; i++) {
+            File ficheropersonal1 = new File(
+                    "Com/Projecte/src/dades_" + usuario.getEmail() + "/" + nombre[i] + ".txt");
+            try {
+                if (!ficheropersonal1.exists()) {
+                    ficheropersonal1.getParentFile().mkdirs();
+                    ficheropersonal1.createNewFile();
+                }
+    
+                try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheropersonal1, true))) {
+                    String linea = "";
+                    out.write(linea);
+                }
+    
+            } catch (IOException e) {
+                System.out.println("Error al manipular el archivo: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error de tipo " + e.toString());
             }
-
-            try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheropersonal, true))) {
-                String linea = "";
-                out.write(linea);
-                System.out.println("carpete de" + usuario.getNombre() + " añadido correctamente al archivo.");
-            }
-
-        } catch (IOException e) {
-            System.out.println("Error al manipular el archivo: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Error de tipo " + e.toString());
         }
+        System.out.println("carpetas de" + usuario.getNombre() + " añadidas correctamente al archivo.");
     }
 
     public static ArrayList<Usuari> crearUsuari(ArrayList<Usuari> usuaris) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Usuarios.txt");
+        File fichero = new File("Com/Projecte/src/dades/Usuarios.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -104,8 +111,16 @@ public class Usuari extends Persona {
                 break;
 
             // Falta comprobar una segunda contaseña bucle hasta que coincidan
-            System.out.print("Password del usuario: ");
-            String password = sc.nextLine();
+            String password = "";
+            String password2 = "";
+            do {
+                System.out.print("Password del usuario: ");
+                password = sc.nextLine();
+
+                System.out.print("Otra vez password del usuario: ");
+                password2 = sc.nextLine();
+            } while (!password.equals(password2));
+
             if (password.equalsIgnoreCase("fin"))
                 break;
 
@@ -139,7 +154,7 @@ public class Usuari extends Persona {
     }
 
     public static Usuari login() {
-        File fichero = new File("Com/Projecte/src/dev/dades/Usuarios.txt");
+        File fichero = new File("Com/Projecte/src/dades/Usuarios.txt");
 
         if (!fichero.exists()) {
             System.out.println("No existe el archivo de usuarios.");

@@ -5,6 +5,8 @@ import Com.Projecte.Alvaro.DatosAlvaro;
 import Com.Projecte.Josep.Dadesjosep;
 import Com.Projecte.Raul.DatosRaul;
 import Com.Projecte.src.dev.*;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,6 +18,8 @@ public class ProgramaPrincipal {
     static ArrayList<Usuari> usuarios = new ArrayList<>();
 
     public static void main(String[] args) {
+        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
+        System.out.println(fichero.length());
         inici();
         menuAcces();
     }
@@ -25,6 +29,7 @@ public class ProgramaPrincipal {
         DatosAlejandro.mostrarNombre();
         DatosAlvaro.mostrarNombre();
         DatosRaul.mostrarNombre();
+
     }
 
     public static void menuAcces() {

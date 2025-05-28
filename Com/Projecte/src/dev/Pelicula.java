@@ -59,7 +59,7 @@ public class Pelicula implements Serializable {
     }
 
     public static void crearFicheroPelicula(Pelicula pelicula) {
-        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
 
         try {
             if (!fichero.exists()) {
@@ -86,7 +86,7 @@ public class Pelicula implements Serializable {
         String titulo = "";
         int duracion = 0;
 
-        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -146,8 +146,8 @@ public class Pelicula implements Serializable {
     }
 
     public static void eliminarPelicula(ArrayList<Pelicula> peliculas) {
-        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
-        if (peliculas.isEmpty()) {
+        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
+        if (fichero.length() < 1) {
             System.out.println("No hay películas para eliminar.");
             return;
         }

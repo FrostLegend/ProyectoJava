@@ -13,7 +13,7 @@ public class Actor extends Persona {
     }
 
     public static ArrayList<Actor> CrearActor(ArrayList<Actor> actores) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Actores.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -81,7 +81,7 @@ public class Actor extends Persona {
     }
 
     public static void CrearficheroActor(Actor actor) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Actores.txt");
 
         try {
             if (!fichero.exists()) {
@@ -104,7 +104,7 @@ public class Actor extends Persona {
     }
 
     public static void eliminarActor(ArrayList<Actor> actores) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Actores.txt");
         
         if (actores.isEmpty()) {
             System.out.println("No hay actores para eliminar.");

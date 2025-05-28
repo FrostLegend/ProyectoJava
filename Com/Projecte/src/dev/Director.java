@@ -13,7 +13,7 @@ public class Director extends Persona {
     }
 
     public static ArrayList<Director> CrearDirector(ArrayList<Director> directores) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Directores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -81,7 +81,7 @@ public class Director extends Persona {
     }
 
     public static void CrearficheroDirector(Director director) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Directores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
 
         try {
             if (!fichero.exists()) {
@@ -104,7 +104,7 @@ public class Director extends Persona {
     }
 
     public static void eliminarDirector(ArrayList<Director> directores) {
-        File fichero = new File("Com/Projecte/src/dev/dades/Directores.txt");
+        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
         if (directores.isEmpty()) {
             System.out.println("No hay directores para eliminar.");
             return;
