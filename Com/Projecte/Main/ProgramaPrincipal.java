@@ -1,14 +1,12 @@
 package Com.Projecte.Main;
 
-import Com.Projecte.Josep.Dadesjosep;
-
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import Com.Projecte.Alejandro.DatosAlejandro;
 import Com.Projecte.Alvaro.DatosAlvaro;
+import Com.Projecte.Josep.Dadesjosep;
 import Com.Projecte.Raul.DatosRaul;
 import Com.Projecte.src.dev.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ProgramaPrincipal {
     static Scanner sc = new Scanner(System.in);
@@ -103,19 +101,19 @@ public class ProgramaPrincipal {
                         Director.CrearDirector(directores);
                         break;
                     case 2:
-                        // meter aqui eliminar director
+                        Director.eliminarDirector(directores);
                         break;
                     case 3:
-                        Pelicula.afegirPelicula(directores, actores);
+                        Pelicula.afegirPelicula();
                         break;
                     case 4:
-                        // meter aqui eliminar pelicula
+                        Pelicula.eliminarPelicula(peliculas);
                         break;
                     case 5:
                         Actor.CrearActor(actores);
                         break;
                     case 6:
-                        // meter aqui eliminar actor
+                        Actor.eliminarActor(actores);
                         break;
                     case 7:
                         System.out.println("Saliendo...");

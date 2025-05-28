@@ -2,6 +2,7 @@ package Com.Projecte.src.dev;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Actor extends Persona {
@@ -12,7 +13,7 @@ public class Actor extends Persona {
     }
 
     public static ArrayList<Actor> CrearActor(ArrayList<Actor> actores) {
-        File fichero = new File("Com/Projecte/src/dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -80,7 +81,7 @@ public class Actor extends Persona {
     }
 
     public static void CrearficheroActor(Actor actor) {
-        File fichero = new File("Com/Projecte/src/dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
 
         try {
             if (!fichero.exists()) {
@@ -99,6 +100,60 @@ public class Actor extends Persona {
             System.out.println("Error al escribir en el archivo: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error inesperado: " + e.toString());
+        }
+    }
+
+    public static void eliminarActor(ArrayList<Actor> actores) {
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
+        
+        if (actores.isEmpty()) {
+            System.out.println("No hay actores para eliminar.");
+            return;
+        }
+        // Mostrar lista y sus IDs
+        System.out.println("Actores existentes:");
+        for (Actor a : actores) {
+            System.out.printf("ID %d: %s %s%n", a.getId(), a.getNombre(), a.getApellido());
+        }
+        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        int id;
+        try {
+            id = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+        if (id == 0) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
+        Actor toRemove = null;
+        for (Actor a : actores) {
+            if (a.getId() == id) { toRemove = a; break; }
+        }
+        if (toRemove == null) {
+            System.out.println("ID no encontrado.");
+            return;
+        }
+        actores.remove(toRemove);
+        // Reescribir fichero sin el eliminado
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith(id + ";")) {
+                    lines.add(line);
+                }
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+                for (String l : lines) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            }
+            System.out.println("Actor eliminado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
     }
 }

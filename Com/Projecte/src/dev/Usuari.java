@@ -38,10 +38,30 @@ public class Usuari extends Persona {
         } catch (Exception e) {
             System.out.println("Error de tipo " + e.toString());
         }
+        File ficheropersonal = new File(
+                "Com/Projecte/src/dades_" + usuario.getEmail() + "/" + usuario.getEmail() + ".txt");
+
+        try {
+            if (!ficheropersonal.exists()) {
+                ficheropersonal.getParentFile().mkdirs();
+                ficheropersonal.createNewFile();
+            }
+
+            try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheropersonal, true))) {
+                String linea = "";
+                out.write(linea);
+                System.out.println("carpete de" + usuario.getNombre() + " añadido correctamente al archivo.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error al manipular el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error de tipo " + e.toString());
+        }
     }
 
     public static ArrayList<Usuari> crearUsuari(ArrayList<Usuari> usuaris) {
-        File fichero = new File("Com/Projecte/src/dades/Usuarios.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Usuarios.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -83,7 +103,7 @@ public class Usuari extends Persona {
             if (email.equalsIgnoreCase("fin"))
                 break;
 
-            //Falta comprobar una segunda contaseña bucle hasta que coincidan
+            // Falta comprobar una segunda contaseña bucle hasta que coincidan
             System.out.print("Password del usuario: ");
             String password = sc.nextLine();
             if (password.equalsIgnoreCase("fin"))
@@ -119,7 +139,7 @@ public class Usuari extends Persona {
     }
 
     public static Usuari login() {
-        File fichero = new File("Com/Projecte/src/dades/Usuarios.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Usuarios.txt");
 
         if (!fichero.exists()) {
             System.out.println("No existe el archivo de usuarios.");
