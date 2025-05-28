@@ -13,7 +13,7 @@ public class Actor extends Persona {
     }
 
     public static ArrayList<Actor> CrearActor(ArrayList<Actor> actores) {
-        File fichero = new File("../dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -81,7 +81,7 @@ public class Actor extends Persona {
     }
 
     public static void CrearficheroActor(Actor actor) {
-        File fichero = new File("../dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
 
         try {
             if (!fichero.exists()) {
@@ -104,7 +104,7 @@ public class Actor extends Persona {
     }
 
     public static void eliminarActor(ArrayList<Actor> actores) {
-        File fichero = new File("../dades/Actores.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
         
         if (actores.isEmpty()) {
             System.out.println("No hay actores para eliminar.");
@@ -115,7 +115,7 @@ public class Actor extends Persona {
         for (Actor a : actores) {
             System.out.printf("ID %d: %s %s%n", a.getId(), a.getNombre(), a.getApellido());
         }
-        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        System.out.print("Introduce el ID a eliminar (o -1 para cancelar): ");
         int id;
         try {
             id = Integer.parseInt(sc.nextLine());
@@ -123,13 +123,15 @@ public class Actor extends Persona {
             System.out.println("Entrada inválida.");
             return;
         }
-        if (id == 0) {
+        if (id == -1) {
             System.out.println("Operación cancelada.");
             return;
         }
         Actor toRemove = null;
         for (Actor a : actores) {
-            if (a.getId() == id) { toRemove = a; break; }
+            if (a.getId() == id) {
+                toRemove = a; break;
+            }
         }
         if (toRemove == null) {
             System.out.println("ID no encontrado.");
@@ -137,23 +139,79 @@ public class Actor extends Persona {
         }
         actores.remove(toRemove);
         // Reescribir fichero sin el eliminado
+        List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
-            List<String> lines = new ArrayList<>();
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.startsWith(id + ";")) {
+                String[] partes = line.split(";");
+                if (partes.length > 0) {
+                    try {
+                        int idLinea = Integer.parseInt(partes[0]);
+                        if (idLinea != id) {
+                            lines.add(line); // Solo añadimos si no coincide el ID a eliminar
+                        }
+                    } catch (NumberFormatException e) {
+                        // Si la línea no tiene un ID válido, la conservamos para evitar pérdida de datos
+                        lines.add(line);
+                    }
+                } else {
+                    // Línea vacía o mal formada, conservamos
                     lines.add(line);
                 }
             }
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
-                for (String l : lines) {
-                    bw.write(l);
-                    bw.newLine();
-                }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo para eliminar: " + e.getMessage());
+            return;
+        }
+
+        // Escribimos de nuevo el archivo sin la línea eliminada
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+            for (String l : lines) {
+                bw.write(l);
+                bw.newLine();
             }
             System.out.println("Actor eliminado correctamente.");
         } catch (IOException e) {
             System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
+    }
+
+    public static ArrayList<Actor> cargarActores() {
+        ArrayList<Actor> actores = new ArrayList<>();
+        File fichero = new File("Com/Projecte/src/dev/dades/Actores.txt");
+    
+        if (!fichero.exists()) {
+            // Si no existe el archivo, simplemente retornamos la lista vacía
+            return actores;
+        }
+    
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;  // ignorar líneas vacías
+                String[] partes = line.split(";");
+                if (partes.length >= 5) {  
+                    try {
+                        int id = Integer.parseInt(partes[0]);
+                        String nombre = partes[1];
+                        String apellido = partes[2];
+                        String poblacion = partes[3];
+                        int fechaNacimiento = Integer.parseInt(partes[4]);
+    
+                        Actor actor = new Actor(nombre, apellido, poblacion, fechaNacimiento, id);
+                        actores.add(actor);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al parsear línea: " + line);
+                        // Puedes decidir si quieres seguir o detener la carga
+                    }
+                } else {
+                    System.out.println("Formato incorrecto en línea: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo archivo de actores: " + e.getMessage());
+        }
+    
+        return actores;
     }
 }

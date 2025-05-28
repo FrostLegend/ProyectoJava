@@ -16,18 +16,14 @@ public class Pelicula implements Serializable {
     protected int any;
     protected String titol;
     protected int durada;
-    protected ArrayList<Actor> actores;
-    protected ArrayList<Director> directores;
     static Scanner sc = new Scanner(System.in);
 
-    public Pelicula(int any, String titol, int durada, ArrayList<Actor> actores, ArrayList<Director> directores,
-            int id) {
+    public Pelicula(int any, String titol, int durada, int id) {
         this.id = id;
         this.any = any;
         this.titol = titol;
         this.durada = durada;
-        this.actores = actores;
-        this.directores = directores;
+
     }
 
     public int getId() {
@@ -59,26 +55,11 @@ public class Pelicula implements Serializable {
     }
 
     public String toStringPaPeliculas() {
-        return id + ";" + titol + ";" + recorrerArrayList(actores) + ";" + recorrerArrayList(directores) + ";" +
-                any + ";" + durada;
-    }
-
-    public <T> String recorrerArrayList(ArrayList<T> lista) {
-        StringBuilder sb = new StringBuilder("|");
-        for (T item : lista) {
-            if (item instanceof Actor) {
-                sb.append(((Actor) item).getNombre()).append("|");
-            } else if (item instanceof Director) {
-                sb.append(((Director) item).getNombre()).append("|");
-            } else {
-                sb.append(item.toString()).append("|");
-            }
-        }
-        return sb.toString();
+        return id + ";" + titol + ";" + any + ";" + durada;
     }
 
     public static void crearFicheroPelicula(Pelicula pelicula) {
-        File fichero = new File("../dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
 
         try {
             if (!fichero.exists()) {
@@ -100,13 +81,12 @@ public class Pelicula implements Serializable {
         }
     }
 
-    public static Pelicula afegirPelicula(ArrayList<Director> directoresExistentes,
-            ArrayList<Actor> actoresExistentes) {
+    public static Pelicula afegirPelicula() {
         int año = 0;
         String titulo = "";
         int duracion = 0;
 
-        File fichero = new File("../dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -159,17 +139,14 @@ public class Pelicula implements Serializable {
             }
         }
 
-        ArrayList<Actor> actores = Actor.CrearActor(actoresExistentes);
-        ArrayList<Director> directores = Director.CrearDirector(directoresExistentes);
-
         int nuevaId = ++ultimaId;
-        Pelicula nuevaPelicula = new Pelicula(año, titulo, duracion, actores, directores, nuevaId);
+        Pelicula nuevaPelicula = new Pelicula(año, titulo, duracion,nuevaId);
         crearFicheroPelicula(nuevaPelicula);
         return nuevaPelicula;
     }
 
     public static void eliminarPelicula(ArrayList<Pelicula> peliculas) {
-        File fichero = new File("../dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
         if (peliculas.isEmpty()) {
             System.out.println("No hay películas para eliminar.");
             return;
@@ -178,7 +155,7 @@ public class Pelicula implements Serializable {
         for (Pelicula p : peliculas) {
             System.out.printf("ID %d: %s%n", p.getId(), p.getTitol());
         }
-        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        System.out.print("Introduce el ID a eliminar (o -1 para cancelar): ");
         int id;
         try {
             id = Integer.parseInt(sc.nextLine());
@@ -186,36 +163,95 @@ public class Pelicula implements Serializable {
             System.out.println("Entrada inválida.");
             return;
         }
-        if (id == 0) {
+        if (id == -1) {
             System.out.println("Operación cancelada.");
             return;
         }
         Pelicula toRemove = null;
         for (Pelicula p : peliculas) {
-            if (p.getId() == id) { toRemove = p; break; }
+            if (p.getId() == id) {
+                toRemove = p;
+                break;
+            }
         }
         if (toRemove == null) {
             System.out.println("ID no encontrado.");
             return;
         }
         peliculas.remove(toRemove);
+        
+        List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
-            List<String> lines = new ArrayList<>();
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.startsWith(id + ";")) {
+                String[] partes = line.split(";");
+                if (partes.length > 0) {
+                    try {
+                        int idLinea = Integer.parseInt(partes[0]);
+                        if (idLinea != id) {
+                            lines.add(line); // Solo añadimos si no coincide el ID a eliminar
+                        }
+                    } catch (NumberFormatException e) {
+                        // Si la línea no tiene un ID válido, la conservamos para evitar pérdida de datos
+                        lines.add(line);
+                    }
+                } else {
+                    // Línea vacía o mal formada, conservamos
                     lines.add(line);
                 }
             }
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
-                for (String l : lines) {
-                    bw.write(l);
-                    bw.newLine();
-                }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo para eliminar: " + e.getMessage());
+            return;
+        }
+
+        // Escribimos de nuevo el archivo sin la línea eliminada
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+            for (String l : lines) {
+                bw.write(l);
+                bw.newLine();
             }
-            System.out.println("Película eliminada correctamente.");
+            System.out.println("Pelicula eliminado correctamente.");
         } catch (IOException e) {
             System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
+    }
+
+    public static ArrayList<Pelicula> cargarPeliculas() {
+        ArrayList<Pelicula> peliculas = new ArrayList<>();
+        File fichero = new File("Com/Projecte/src/dev/dades/peliculas.txt");
+    
+        if (!fichero.exists()) {
+            // Si no existe el archivo, simplemente retornamos la lista vacía
+            return peliculas;
+        }
+    
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;  // ignorar líneas vacías
+                String[] partes = line.split(";");
+                if (partes.length >= 5) {  
+                    try {
+                        int id = Integer.parseInt(partes[0]);
+                        int año = Integer.parseInt(partes[1]);
+                        String titulo = partes[2];
+                        int duracion = Integer.parseInt(partes[3]);
+    
+                        Pelicula pelicula = new Pelicula(año, titulo, duracion, id);
+                        peliculas.add(pelicula);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al parsear línea: " + line);
+                        // Puedes decidir si quieres seguir o detener la carga
+                    }
+                } else {
+                    System.out.println("Formato incorrecto en línea: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo archivo de peliculas: " + e.getMessage());
+        }
+    
+        return peliculas;
     }
 }
