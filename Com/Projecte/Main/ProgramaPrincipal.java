@@ -18,8 +18,6 @@ public class ProgramaPrincipal {
     static ArrayList<Usuari> usuarios = new ArrayList<>();
 
     public static void main(String[] args) {
-        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
-        System.out.println(fichero.length());
         inici();
         menuAcces();
     }
