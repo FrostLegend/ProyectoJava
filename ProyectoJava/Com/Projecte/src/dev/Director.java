@@ -1,19 +1,15 @@
 package Com.Projecte.src.dev;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Director extends Persona {
     static Scanner sc = new Scanner(System.in);
 
-    public Director(String nombre, String apellido, String poblacio, int fechaNacimiento, int id) {
-        super(nombre, apellido, poblacio, fechaNacimiento, id);
+    public Director(String nombre, String apellido, String poblacion, int fechaNacimiento, int id) {
+        super(nombre, apellido, poblacion, fechaNacimiento, id);
     }
 
     public static ArrayList<Director> CrearDirector(ArrayList<Director> directores) {
@@ -25,7 +21,6 @@ public class Director extends Persona {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     if (!linea.isEmpty()) {
-
                         String[] partes = linea.split(";");
                         if (partes.length > 0) {
                             try {
@@ -44,20 +39,21 @@ public class Director extends Persona {
         }
 
         System.out.println("Introduce los datos de los directores (escribe 'fin' en el nombre para terminar):");
+
         while (true) {
             System.out.print("Nombre del director: ");
-            String nombredirector = sc.nextLine();
-            if (nombredirector.equalsIgnoreCase("fin"))
+            String nombre = sc.nextLine();
+            if (nombre.equalsIgnoreCase("fin"))
                 break;
 
             System.out.print("Apellido del director: ");
-            String apellidodirector = sc.nextLine();
-            if (apellidodirector.equalsIgnoreCase("fin"))
+            String apellido = sc.nextLine();
+            if (apellido.equalsIgnoreCase("fin"))
                 break;
 
             System.out.print("Población del director: ");
-            String poblaciondirector = sc.nextLine();
-            if (poblaciondirector.equalsIgnoreCase("fin"))
+            String poblacion = sc.nextLine();
+            if (poblacion.equalsIgnoreCase("fin"))
                 break;
 
             int fechaNacimiento = 0;
@@ -65,16 +61,18 @@ public class Director extends Persona {
                 try {
                     System.out.print("Año de nacimiento del director: ");
                     fechaNacimiento = Integer.parseInt(sc.nextLine());
-                    if (fechaNacimiento > 1900 && fechaNacimiento < 2025)
+                    if (fechaNacimiento >= 1900 && fechaNacimiento <= 2024) {
                         break;
-                    System.out.println("Año de nacimiento no válido.");
+                    } else {
+                        System.out.println("Año de nacimiento fuera de rango válido.");
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("Introduce un número válido.");
                 }
             }
 
             int id = ++ultimaId;
-            Director director = new Director(nombredirector, apellidodirector, poblaciondirector, fechaNacimiento, id);
+            Director director = new Director(nombre, apellido, poblacion, fechaNacimiento, id);
             CrearficheroDirector(director);
             directores.add(director);
         }
@@ -92,18 +90,67 @@ public class Director extends Persona {
             }
 
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fichero, true))) {
-                String linea = director.toStringPaFicheros2();
-                if (!linea.equals(".")) {
-                    out.write(linea);
-                    out.newLine();
-                    System.out.println("Texto añadido correctamente al archivo.");
-                }
+                String linea = director.toStringPaFicherosActores_Directores();
+                out.write(linea);
+                out.newLine();
+                System.out.println("Director añadido correctamente al archivo.");
             }
 
         } catch (IOException e) {
-            System.out.println("Error al manipular el archivo: " + e.getMessage());
+            System.out.println("Error al escribir en el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error de tipo " + e.toString());
+            System.out.println("Error inesperado: " + e.toString());
+        }
+    }
+
+    public static void eliminarDirector(ArrayList<Director> directores) {
+        File fichero = new File("../dades/Directores.txt");
+        if (directores.isEmpty()) {
+            System.out.println("No hay directores para eliminar.");
+            return;
+        }
+        System.out.println("Directores existentes:");
+        for (Director d : directores) {
+            System.out.printf("ID %d: %s %s%n", d.getId(), d.getNombre(), d.getApellido());
+        }
+        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        int id;
+        try {
+            id = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+        if (id == 0) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
+        Director toRemove = null;
+        for (Director d : directores) {
+            if (d.getId() == id) { toRemove = d; break; }
+        }
+        if (toRemove == null) {
+            System.out.println("ID no encontrado.");
+            return;
+        }
+        directores.remove(toRemove);
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith(id + ";")) {
+                    lines.add(line);
+                }
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+                for (String l : lines) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            }
+            System.out.println("Director eliminado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
     }
 }

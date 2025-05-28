@@ -1,19 +1,15 @@
 package Com.Projecte.src.dev;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Actor extends Persona {
     static Scanner sc = new Scanner(System.in);
 
-    public Actor(String nombre, String apellido, String poblacio, int fechaNacimiento, int id) {
-        super(nombre, apellido, poblacio, fechaNacimiento, id);
+    public Actor(String nombre, String apellido, String poblacion, int fechaNacimiento, int id) {
+        super(nombre, apellido, poblacion, fechaNacimiento, id);
     }
 
     public static ArrayList<Actor> CrearActor(ArrayList<Actor> actores) {
@@ -43,20 +39,21 @@ public class Actor extends Persona {
         }
 
         System.out.println("Introduce los datos de los actores (escribe 'fin' en el nombre para terminar):");
+
         while (true) {
             System.out.print("Nombre del actor: ");
-            String nombreactor = sc.nextLine();
-            if (nombreactor.equalsIgnoreCase("fin"))
+            String nombre = sc.nextLine();
+            if (nombre.equalsIgnoreCase("fin"))
                 break;
 
             System.out.print("Apellido del actor: ");
-            String apellidoactor = sc.nextLine();
-            if (apellidoactor.equalsIgnoreCase("fin"))
+            String apellido = sc.nextLine();
+            if (apellido.equalsIgnoreCase("fin"))
                 break;
 
             System.out.print("Población del actor: ");
-            String poblacionactor = sc.nextLine();
-            if (poblacionactor.equalsIgnoreCase("fin"))
+            String poblacion = sc.nextLine();
+            if (poblacion.equalsIgnoreCase("fin"))
                 break;
 
             int fechaNacimiento = 0;
@@ -64,16 +61,18 @@ public class Actor extends Persona {
                 try {
                     System.out.print("Año de nacimiento del actor: ");
                     fechaNacimiento = Integer.parseInt(sc.nextLine());
-                    if (fechaNacimiento > 1900 && fechaNacimiento < 2025)
+                    if (fechaNacimiento >= 1900 && fechaNacimiento <= 2024) {
                         break;
-                    System.out.println("Año de nacimiento no válido.");
+                    } else {
+                        System.out.println("Año de nacimiento fuera de rango válido.");
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("Introduce un número válido.");
                 }
             }
 
             int id = ++ultimaId;
-            Actor actor = new Actor(nombreactor, apellidoactor, poblacionactor, fechaNacimiento, id);
+            Actor actor = new Actor(nombre, apellido, poblacion, fechaNacimiento, id);
             CrearficheroActor(actor);
             actores.add(actor);
         }
@@ -81,7 +80,7 @@ public class Actor extends Persona {
         return actores;
     }
 
-    public static void CrearficheroActor(Actor Actor) {
+    public static void CrearficheroActor(Actor actor) {
         File fichero = new File("../dades/Actores.txt");
 
         try {
@@ -91,18 +90,70 @@ public class Actor extends Persona {
             }
 
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fichero, true))) {
-                String linea = Actor.toStringPaFicheros2();
-                if (!linea.equals(".")) {
-                    out.write(linea);
-                    out.newLine();
-                    System.out.println("Texto añadido correctamente al archivo.");
-                }
+                String linea = actor.toStringPaFicherosActores_Directores();
+                out.write(linea);
+                out.newLine();
+                System.out.println("actor añadido correctamente al archivo.");
             }
 
         } catch (IOException e) {
-            System.out.println("Error al manipular el archivo: " + e.getMessage());
+            System.out.println("Error al escribir en el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error de tipo " + e.toString());
+            System.out.println("Error inesperado: " + e.toString());
+        }
+    }
+
+    public static void eliminarActor(ArrayList<Actor> actores) {
+        File fichero = new File("../dades/Actores.txt");
+        
+        if (actores.isEmpty()) {
+            System.out.println("No hay actores para eliminar.");
+            return;
+        }
+        // Mostrar lista y sus IDs
+        System.out.println("Actores existentes:");
+        for (Actor a : actores) {
+            System.out.printf("ID %d: %s %s%n", a.getId(), a.getNombre(), a.getApellido());
+        }
+        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        int id;
+        try {
+            id = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+        if (id == 0) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
+        Actor toRemove = null;
+        for (Actor a : actores) {
+            if (a.getId() == id) { toRemove = a; break; }
+        }
+        if (toRemove == null) {
+            System.out.println("ID no encontrado.");
+            return;
+        }
+        actores.remove(toRemove);
+        // Reescribir fichero sin el eliminado
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith(id + ";")) {
+                    lines.add(line);
+                }
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+                for (String l : lines) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            }
+            System.out.println("Actor eliminado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
     }
 }

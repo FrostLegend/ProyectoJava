@@ -1,14 +1,12 @@
 package Com.Projecte.Main;
 
-import Com.Projecte.Josep.Dadesjosep;
-
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import Com.Projecte.Alejandro.DatosAlejandro;
 import Com.Projecte.Alvaro.DatosAlvaro;
+import Com.Projecte.Josep.Dadesjosep;
 import Com.Projecte.Raul.DatosRaul;
 import Com.Projecte.src.dev.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ProgramaPrincipal {
     static Scanner sc = new Scanner(System.in);
@@ -30,32 +28,37 @@ public class ProgramaPrincipal {
     }
 
     public static void menuAcces() {
-        System.out.println("-----ACCES USUARI-----");
-        System.out.println("1. Login.");
-        System.out.println("2. Registre.");
-        System.out.println("3. Eixir.");
+        System.out.println("|");
+        System.out.println("|");
+        System.out.println("|                 ACCÉS USUARI.");
+        System.out.println("|");
+        System.out.println("|              1. Login.");
+        System.out.println("|");
+        System.out.println("|              2. Registre.");
+        System.out.println("|");
+        System.out.println("|              3. Eixir.");
+        System.out.println("|");
+        System.out.println("|______________________________________________________");
 
         do {
-            System.out.println("------ACCESO PÁGINA------");
-            System.out.println("1. Login");
-            System.out.println("2. Registro");
-            System.out.println("3. Salir");
-            System.out.print("Seleccione una opción: ");
             int opcio;
             String input = sc.nextLine();
             try {
-                opcio = Integer.parseInt(input); 
+                opcio = Integer.parseInt(input);
 
                 switch (opcio) {
                     case 1:
-                        login();
+                        Usuari usuari = Usuari.login();
+                        if (usuari != null) {
+                            menuLogin(usuari);
+                        }
                         break;
                     case 2:
                         Usuari.crearUsuari(usuarios);
                         break;
                     case 3:
                         System.out.println("Saliendo...");
-                        return;
+                        System.exit(opcio);
                     default:
                         System.out.println("No es una opción válida");
                 }
@@ -67,12 +70,62 @@ public class ProgramaPrincipal {
         } while (true);
     }
 
-    public static void login() {
-        System.out.println("");
+    public static void menuLogin(Usuari usuari) {
+        System.out.println("|");
+        System.out.println("|");
+        System.out.println("|     BENVINGUT " + usuari.getNombre() + "! Tria una opció:");
+        System.out.println("|");
+        System.out.println("|              1. Añadir Director.");
+        System.out.println("|");
+        System.out.println("|              2. Eliminar Director.");
+        System.out.println("|");
+        System.out.println("|              3. Añadir Pel·licula.");
+        System.out.println("|");
+        System.out.println("|              4. Eliminar Pel·licula.");
+        System.out.println("|");
+        System.out.println("|              5. Añadir Actor.");
+        System.out.println("|");
+        System.out.println("|              6. Eliminar Actor.");
+        System.out.println("|");
+        System.out.println("|              7. Eixir.");
+        System.out.println("|");
+        System.out.println("|______________________________________________________");
+        do {
+            int opcio;
+            String input = sc.nextLine();
+            try {
+                opcio = Integer.parseInt(input);
+
+                switch (opcio) {
+                    case 1:
+                        Director.CrearDirector(directores);
+                        break;
+                    case 2:
+                        Director.eliminarDirector(directores);
+                        break;
+                    case 3:
+                        Pelicula.afegirPelicula(directores, actores);
+                        break;
+                    case 4:
+                        Pelicula.eliminarPelicula(peliculas);
+                        break;
+                    case 5:
+                        Actor.CrearActor(actores);
+                        break;
+                    case 6:
+                        Actor.eliminarActor(actores);
+                        break;
+                    case 7:
+                        System.out.println("Saliendo...");
+                        System.exit(opcio);
+                    default:
+                        System.out.println("No es una opción válida");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor ingrese un número.");
+            }
+
+        } while (true);
     }
-
-    public static void registre() {
-
-    }
-
 }

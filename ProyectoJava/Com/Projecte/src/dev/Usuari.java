@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class Usuari extends Persona {
     static Scanner sc = new Scanner(System.in);
+
     public Usuari(String nombre, String apellido, String email, String password, String poblacio, Boolean rol,
             int fechaNacimiento, int id) {
         super(nombre, apellido, email, password, poblacio, rol, fechaNacimiento, id);
@@ -26,12 +27,10 @@ public class Usuari extends Persona {
             }
 
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fichero, true))) {
-                String linea = usuario.toStringPaFicheros2();
-                if (!linea.equals(".")) {
-                    out.write(linea);
-                    out.newLine();
-                    System.out.println("Texto añadido correctamente al archivo.");
-                }
+                String linea = usuario.toStringPaFicherosUsuarios();
+                out.write(linea);
+                out.newLine();
+                System.out.println("Usuario añadido correctamente al archivo.");
             }
 
         } catch (IOException e) {
@@ -84,6 +83,7 @@ public class Usuari extends Persona {
             if (email.equalsIgnoreCase("fin"))
                 break;
 
+            //Falta comprobar una segunda contaseña bucle hasta que coincidan
             System.out.print("Password del usuario: ");
             String password = sc.nextLine();
             if (password.equalsIgnoreCase("fin"))
@@ -116,5 +116,51 @@ public class Usuari extends Persona {
         }
 
         return usuaris;
+    }
+
+    public static Usuari login() {
+        File fichero = new File("../dades/Usuarios.txt");
+
+        if (!fichero.exists()) {
+            System.out.println("No existe el archivo de usuarios.");
+            return null;
+        }
+
+        System.out.print("Introduce el email: ");
+        String emailInput = sc.nextLine();
+
+        System.out.print("Introduce la contraseña: ");
+        String passwordInput = sc.nextLine();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.trim().isEmpty()) {
+                    String[] partes = linea.split(";");
+                    if (partes.length >= 8) {
+                        int id = Integer.parseInt(partes[0]);
+                        String nombre = partes[1];
+                        String apellido = partes[2];
+                        String email = partes[3];
+                        String password = partes[4];
+                        String poblacio = partes[5];
+                        boolean rol = Boolean.parseBoolean(partes[6]);
+                        int fechaNacimiento = Integer.parseInt(partes[7]);
+
+                        if (email.equals(emailInput) && password.equals(passwordInput)) {
+                            System.out.println("Inicio de sesión exitoso. Bienvenido, " + nombre + "!");
+                            return new Usuari(nombre, apellido, email, password, poblacio, rol, fechaNacimiento, id);
+                        }
+                    }
+                }
+            }
+            System.out.println("Email o contraseña incorrectos.");
+        } catch (IOException e) {
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.toString());
+        }
+
+        return null;
     }
 }

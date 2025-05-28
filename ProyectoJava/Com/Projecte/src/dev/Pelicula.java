@@ -8,11 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Pelicula implements Serializable {
     protected int id;
-    private static int contadorId = 1;
     protected int any;
     protected String titol;
     protected int durada;
@@ -22,13 +22,12 @@ public class Pelicula implements Serializable {
 
     public Pelicula(int any, String titol, int durada, ArrayList<Actor> actores, ArrayList<Director> directores,
             int id) {
-        this.id = contadorId++;
+        this.id = id;
         this.any = any;
         this.titol = titol;
         this.durada = durada;
-        this.actores = new ArrayList<>();
-        this.directores = new ArrayList<>();
-        this.id = id;
+        this.actores = actores;
+        this.directores = directores;
     }
 
     public int getId() {
@@ -39,7 +38,7 @@ public class Pelicula implements Serializable {
         return any;
     }
 
-    public void setany(int any) {
+    public void setAny(int any) {
         this.any = any;
     }
 
@@ -59,28 +58,26 @@ public class Pelicula implements Serializable {
         this.durada = durada;
     }
 
-    public String toStringPaFicheros() {
-        return "" + getId() + "," + recorrer_ArrayList(actores) + "," + recorrer_ArrayList2(directores) + ","
-                + getAny() + "," + getTitol() + "," + getDurada() + "";
+    public String toStringPaPeliculas() {
+        return id + ";" + titol + ";" + recorrerArrayList(actores) + ";" + recorrerArrayList(directores) + ";" +
+                any + ";" + durada;
     }
 
-    public String recorrer_ArrayList(ArrayList<Actor> actors) {
-        String Listaactor = "|";
-        for (int index = 0; index < actors.size(); index++) {
-            Listaactor += actors.get(index) + "|";
+    public <T> String recorrerArrayList(ArrayList<T> lista) {
+        StringBuilder sb = new StringBuilder("|");
+        for (T item : lista) {
+            if (item instanceof Actor) {
+                sb.append(((Actor) item).getNombre()).append("|");
+            } else if (item instanceof Director) {
+                sb.append(((Director) item).getNombre()).append("|");
+            } else {
+                sb.append(item.toString()).append("|");
+            }
         }
-        return Listaactor;
+        return sb.toString();
     }
 
-    public String recorrer_ArrayList2(ArrayList<Director> directors) {
-        String Listaactor = "|";
-        for (int index = 0; index < directors.size(); index++) {
-            Listaactor += directors.get(index) + "|";
-        }
-        return Listaactor;
-    }
-
-    public static void CrearficheroPelicula(Pelicula pelicula) {
+    public static void crearFicheroPelicula(Pelicula pelicula) {
         File fichero = new File("../dades/peliculas.txt");
 
         try {
@@ -90,27 +87,24 @@ public class Pelicula implements Serializable {
             }
 
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fichero, true))) {
-                String linea = pelicula.toStringPaFicheros();
-                if (!linea.equals(".")) {
-                    out.write(linea);
-                    out.newLine();
-                    System.out.println("Texto añadido correctamente al archivo.");
-                }
+                String linea = pelicula.toStringPaPeliculas();
+                out.write(linea);
+                out.newLine();
+                System.out.println("Película añadida correctamente al archivo.");
             }
 
         } catch (IOException e) {
             System.out.println("Error al manipular el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error de tipo " + e.toString());
+            System.out.println("Error de tipo: " + e.toString());
         }
     }
 
-    public static Pelicula AfegirPelicula(ArrayList<Director> directores, ArrayList<Actor> actores) {
+    public static Pelicula afegirPelicula(ArrayList<Director> directoresExistentes,
+            ArrayList<Actor> actoresExistentes) {
         int año = 0;
         String titulo = "";
-        int durada = 0;
-        actores = new ArrayList<>();
-        directores = new ArrayList<>();
+        int duracion = 0;
 
         File fichero = new File("../dades/peliculas.txt");
         int ultimaId = -1;
@@ -135,8 +129,8 @@ public class Pelicula implements Serializable {
             } catch (IOException e) {
                 System.out.println("Error leyendo el archivo para obtener la última ID: " + e.getMessage());
             }
-
         }
+
         while (true) {
             try {
                 System.out.print("Dime el año: ");
@@ -158,14 +152,70 @@ public class Pelicula implements Serializable {
         while (true) {
             try {
                 System.out.print("Dime la duración de la película: ");
-                durada = Integer.parseInt(sc.nextLine());
+                duracion = Integer.parseInt(sc.nextLine());
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Duración inválida. Intenta de nuevo.");
             }
         }
-        int id = ++ultimaId;
-        CrearficheroPelicula(new Pelicula(año, titulo, durada, actores, directores, id));
-        return new Pelicula(año, titulo, durada, Actor.CrearActor(actores), Director.CrearDirector(directores), id);
+
+        ArrayList<Actor> actores = Actor.CrearActor(actoresExistentes);
+        ArrayList<Director> directores = Director.CrearDirector(directoresExistentes);
+
+        int nuevaId = ++ultimaId;
+        Pelicula nuevaPelicula = new Pelicula(año, titulo, duracion, actores, directores, nuevaId);
+        crearFicheroPelicula(nuevaPelicula);
+        return nuevaPelicula;
+    }
+
+    public static void eliminarPelicula(ArrayList<Pelicula> peliculas) {
+        File fichero = new File("../dades/peliculas.txt");
+        if (peliculas.isEmpty()) {
+            System.out.println("No hay películas para eliminar.");
+            return;
+        }
+        System.out.println("Películas existentes:");
+        for (Pelicula p : peliculas) {
+            System.out.printf("ID %d: %s%n", p.getId(), p.getTitol());
+        }
+        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        int id;
+        try {
+            id = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+        if (id == 0) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
+        Pelicula toRemove = null;
+        for (Pelicula p : peliculas) {
+            if (p.getId() == id) { toRemove = p; break; }
+        }
+        if (toRemove == null) {
+            System.out.println("ID no encontrado.");
+            return;
+        }
+        peliculas.remove(toRemove);
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith(id + ";")) {
+                    lines.add(line);
+                }
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+                for (String l : lines) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            }
+            System.out.println("Película eliminada correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al actualizar el archivo: " + e.getMessage());
+        }
     }
 }
