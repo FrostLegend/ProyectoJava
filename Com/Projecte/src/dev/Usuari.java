@@ -38,7 +38,6 @@ public class Usuari extends Persona {
         } catch (Exception e) {
             System.out.println("Error de tipo " + e.toString());
         }
-
         CrearficheroUsuarioPersonal(usuario);
     }
 
@@ -52,12 +51,12 @@ public class Usuari extends Persona {
                     ficheropersonal1.getParentFile().mkdirs();
                     ficheropersonal1.createNewFile();
                 }
-    
+
                 try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheropersonal1, true))) {
                     String linea = "";
                     out.write(linea);
                 }
-    
+
             } catch (IOException e) {
                 System.out.println("Error al manipular el archivo: " + e.getMessage());
             } catch (Exception e) {
@@ -110,7 +109,6 @@ public class Usuari extends Persona {
             if (email.equalsIgnoreCase("fin"))
                 break;
 
-            // Falta comprobar una segunda contaseña bucle hasta que coincidan
             String password = "";
             String password2 = "";
             do {

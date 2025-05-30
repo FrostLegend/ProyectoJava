@@ -109,11 +109,12 @@ public class Director extends Persona {
             System.out.println("No hay directores para eliminar.");
             return;
         }
+
         System.out.println("Directores existentes:");
         for (Director d : directores) {
             System.out.printf("ID %d: %s %s%n", d.getId(), d.getNombre(), d.getApellido());
         }
-        System.out.print("Introduce el ID a eliminar (o 0 para cancelar): ");
+        System.out.print("Introduce el ID a eliminar (o -1 para cancelar): ");
         int id;
         try {
             id = Integer.parseInt(sc.nextLine());
@@ -121,36 +122,102 @@ public class Director extends Persona {
             System.out.println("Entrada inválida.");
             return;
         }
-        if (id == 0) {
+        if (id == -1) {
             System.out.println("Operación cancelada.");
             return;
         }
+
         Director toRemove = null;
         for (Director d : directores) {
-            if (d.getId() == id) { toRemove = d; break; }
+            if (d.getId() == id) {
+                toRemove = d;
+                break;
+            }
         }
         if (toRemove == null) {
             System.out.println("ID no encontrado.");
             return;
         }
+
+        // Actualizamos la lista en memoria
         directores.remove(toRemove);
+
+        // Ahora actualizamos el archivo, eliminando la línea con ese ID
+        List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
-            List<String> lines = new ArrayList<>();
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.startsWith(id + ";")) {
+                String[] partes = line.split(";");
+                if (partes.length > 0) {
+                    try {
+                        int idLinea = Integer.parseInt(partes[0]);
+                        if (idLinea != id) {
+                            lines.add(line); // Solo añadimos si no coincide el ID a eliminar
+                        }
+                    } catch (NumberFormatException e) {
+                        // Si la línea no tiene un ID válido, la conservamos para evitar pérdida de datos
+                        lines.add(line);
+                    }
+                } else {
+                    // Línea vacía o mal formada, conservamos
                     lines.add(line);
                 }
             }
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
-                for (String l : lines) {
-                    bw.write(l);
-                    bw.newLine();
-                }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo para eliminar: " + e.getMessage());
+            return;
+        }
+
+        // Escribimos de nuevo el archivo sin la línea eliminada
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero, false))) {
+            for (String l : lines) {
+                bw.write(l);
+                bw.newLine();
             }
             System.out.println("Director eliminado correctamente.");
         } catch (IOException e) {
             System.out.println("Error al actualizar el archivo: " + e.getMessage());
         }
+    }
+
+    public static ArrayList<Director> cargarDirectores() {
+        ArrayList<Director> directores = new ArrayList<>();
+        File fichero = new File("Com/Projecte/src/dades/Directores.txt");
+    
+        if (!fichero.exists()) {
+            // Si no existe el archivo, simplemente retornamos la lista vacía
+            return directores;
+        }
+    
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;  // ignorar líneas vacías
+                String[] partes = line.split(";");
+                if (partes.length >= 5) {  
+                    // Según tu constructor: nombre, apellido, poblacion, fechaNacimiento, id
+                    // Asumo que el archivo está guardado en formato: id;nombre;apellido;poblacion;fechaNacimiento
+                    try {
+                        int id = Integer.parseInt(partes[0]);
+                        String nombre = partes[1];
+                        String apellido = partes[2];
+                        String poblacion = partes[3];
+                        int fechaNacimiento = Integer.parseInt(partes[4]);
+    
+                        Director director = new Director(nombre, apellido, poblacion, fechaNacimiento, id);
+                        directores.add(director);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al parsear línea: " + line);
+                        // Puedes decidir si quieres seguir o detener la carga
+                    }
+                } else {
+                    System.out.println("Formato incorrecto en línea: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo archivo de directores: " + e.getMessage());
+        }
+    
+        return directores;
     }
 }

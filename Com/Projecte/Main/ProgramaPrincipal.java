@@ -12,9 +12,9 @@ import java.util.Scanner;
 
 public class ProgramaPrincipal {
     static Scanner sc = new Scanner(System.in);
-    static ArrayList<Director> directores = new ArrayList<>();
-    static ArrayList<Actor> actores = new ArrayList<>();
-    static ArrayList<Pelicula> peliculas = new ArrayList<>();
+    static ArrayList<Director> directores = Director.cargarDirectores();
+    static ArrayList<Actor> actores = Actor.cargarActores();
+    static ArrayList<Pelicula> peliculas = Pelicula.cargarPeliculas();
     static ArrayList<Usuari> usuarios = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -107,7 +107,7 @@ public class ProgramaPrincipal {
                         Director.eliminarDirector(directores);
                         break;
                     case 3:
-                        Pelicula.afegirPelicula();
+                        Pelicula.afegirPelicula(peliculas);
                         break;
                     case 4:
                         Pelicula.eliminarPelicula(peliculas);
