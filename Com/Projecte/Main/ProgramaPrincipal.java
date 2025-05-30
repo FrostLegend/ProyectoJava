@@ -6,7 +6,6 @@ import Com.Projecte.Josep.Dadesjosep;
 import Com.Projecte.Raul.DatosRaul;
 import Com.Projecte.src.dev.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -116,7 +115,7 @@ public class ProgramaPrincipal {
                         Director.eliminarDirector(directores);
                         break;
                     case 4:
-                        Pelicula.afegirPelicula(peliculas);
+                        Pelicula.CrearPelicula(peliculas);
                         break;
                     case 5:
                         Usuari.añadirPersonal(usuari, peliculas, actores, directores, 0);

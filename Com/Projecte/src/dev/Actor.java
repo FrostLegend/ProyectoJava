@@ -71,6 +71,13 @@ public class Actor extends Persona {
                 }
             }
 
+            if (fichero.exists()) {
+                if (buscarLineaPorNombreAppellido(fichero, nombre, apellido) != null) {
+                    System.out.println("El actor ya existe.");
+                    return actores;
+                }
+            }
+
             int id = ++ultimaId;
             Actor actor = new Actor(nombre, apellido, poblacion, fechaNacimiento, id);
             CrearficheroActor(actor);
@@ -220,5 +227,24 @@ public class Actor extends Persona {
         for (Actor a : actores) {
             System.out.printf("ID %d: %s %s%n", a.getId(), a.getNombre(), a.getApellido());
         }
+    }
+
+    public static String buscarLineaPorNombreAppellido(File fichero, String nombre, String apellido) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.trim().isEmpty()) {
+                    String[] partes = linea.split(";");
+                    if (partes.length > 0 && partes[1].equalsIgnoreCase(nombre) && partes[2].equalsIgnoreCase(apellido)) {
+                        return linea;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.toString());
+        }
+        return null;
     }
 }

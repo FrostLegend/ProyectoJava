@@ -81,11 +81,7 @@ public class Pelicula implements Serializable {
         }
     }
 
-    public static Pelicula afegirPelicula(ArrayList <Pelicula> peliculas) {
-        int año = 0;
-        String titulo = "";
-        int duracion = 0;
-
+    public static ArrayList<Pelicula> CrearPelicula(ArrayList <Pelicula> peliculas) {
         File fichero = new File("Com/Projecte/src/dades/Peliculas.txt");
         int ultimaId = -1;
 
@@ -111,24 +107,27 @@ public class Pelicula implements Serializable {
             }
         }
 
+        int año = 0;
         while (true) {
             try {
                 System.out.print("Dime el año: ");
                 año = Integer.parseInt(sc.nextLine());
-                break;
+                if (año >= 1900) {
+                    break;
+                } else {
+                    System.out.println("Año de la pelicula está fuera del rango válido.");
+                }
             } catch (NumberFormatException e) {
-                System.out.println("Año inválido. Intenta de nuevo.");
+                System.out.println("Introduce un número válido.");
             }
         }
 
-        while (true) {
-            System.out.print("Dime el título de la película: ");
-            titulo = sc.nextLine();
-            if (!titulo.isBlank())
-                break;
-            System.out.println("El título no puede estar vacío.");
-        }
+        System.out.print("Dime el título de la película: ");
+            String titulo = sc.nextLine();
+            if (titulo.equalsIgnoreCase("fin"))
+                return peliculas;
 
+        int duracion = 0;
         while (true) {
             try {
                 System.out.print("Dime la duración de la película: ");
@@ -139,11 +138,18 @@ public class Pelicula implements Serializable {
             }
         }
 
+        if (fichero.exists()) {
+            if (buscarLineaPorTitulo(fichero, titulo) != null) {
+                System.out.println("La película ya existe.");
+                return peliculas;
+            }
+        }
+
         int nuevaId = ++ultimaId;
-        Pelicula nuevaPelicula = new Pelicula(año, titulo, duracion,nuevaId);
+        Pelicula nuevaPelicula = new Pelicula(año, titulo, duracion, nuevaId);
         crearFicheroPelicula(nuevaPelicula);
         peliculas.add(nuevaPelicula);
-        return nuevaPelicula;
+        return peliculas;
     }
 
     public static void eliminarPelicula(ArrayList<Pelicula> peliculas) {
@@ -261,5 +267,24 @@ public class Pelicula implements Serializable {
         for (Pelicula p : peliculas) {
             System.out.printf("ID %d: %s%n", p.getId(), p.getTitol());
         }
+    }
+
+    public static String buscarLineaPorTitulo(File fichero, String titulo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.trim().isEmpty()) {
+                    String[] partes = linea.split(";");
+                    if (partes.length > 0 && partes[1].replace(" ", "").equalsIgnoreCase(titulo.replace(" ", ""))) {
+                        return linea;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.toString());
+        }
+        return null;
     }
 }

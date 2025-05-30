@@ -244,39 +244,44 @@ public class Usuari extends Persona {
         File ficheroGeneral = new File("Com/Projecte/src/dades/" + general[tipo] + ".txt");
         File ficheroPersonal = new File("Com/Projecte/src/dades_" + usuario.getEmail() + "/" + personal[tipo] + ".txt");
 
-        boolean encontrado = false;
+        String linea = buscarLineaPorId(ficheroGeneral, id);
+        String seRepite = buscarLineaPorId(ficheroPersonal, id);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(ficheroGeneral))) {
-           String linea;
-           while ((linea = br.readLine()) != null) {
+        if (seRepite != null) {
+            System.out.println(general[tipo] + " ya añadido.");
+            return;
+        }
+
+        if (linea != null) {
+            try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheroPersonal, true))) {
+                out.write(linea);
+                out.newLine();
+                System.out.println(general[tipo] + " añadido correctamente al archivo.");
+            } catch (IOException e) {
+                System.out.println("Error al escribir en el archivo: " + e.getMessage());
+            }
+        } else {
+            System.out.println(general[tipo] + " No encontrado.");
+        }
+    }
+
+    public static String buscarLineaPorId(File fichero, int id) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
                 if (!linea.trim().isEmpty()) {
                     String[] partes = linea.split(";");
-                    if (partes.length > 0 && partes[0].equals(id + "")) {
-                        try {
-                            try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheroPersonal, true))) {
-                                out.write(linea);
-                                out.newLine();
-                                encontrado = true;
-                                break;
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Error al escribir en el archivo: " + e.getMessage());
-                        } catch (Exception e) {
-                            System.out.println("Error inesperado: " + e.toString());
-                        }
+                    if (partes.length > 0 && partes[0].equals(String.valueOf(id))) {
+                        return linea;
                     }
                 }
-           }
-
-           if (encontrado) {
-            System.out.println(general[tipo] + " añadido correctamente al archivo.");
-           } else{
-            System.out.println(general[tipo] + " No encontrado."); 
-           }
+            }
         } catch (IOException e) {
             System.out.println("Error leyendo el archivo: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error inesperado: " + e.toString());
         }
+        return null;
     }
+
 }

@@ -71,6 +71,13 @@ public class Director extends Persona {
                 }
             }
 
+            if (fichero.exists()) {
+                if (buscarLineaPorNombreAppellido(fichero, nombre, apellido) != null) {
+                    System.out.println("El director ya existe.");
+                    return directores;
+                }
+            }
+
             int id = ++ultimaId;
             Director director = new Director(nombre, apellido, poblacion, fechaNacimiento, id);
             CrearficheroDirector(director);
@@ -226,5 +233,24 @@ public class Director extends Persona {
         for (Director d : directores) {
             System.out.printf("ID %d: %s %s%n", d.getId(), d.getNombre(), d.getApellido());
         }
+    }
+
+    public static String buscarLineaPorNombreAppellido(File fichero, String nombre, String apellido) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.trim().isEmpty()) {
+                    String[] partes = linea.split(";");
+                    if (partes.length > 0 && partes[1].equalsIgnoreCase(nombre) && partes[2].equalsIgnoreCase(apellido)) {
+                        return linea;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.toString());
+        }
+        return null;
     }
 }
