@@ -220,4 +220,11 @@ public class Director extends Persona {
     
         return directores;
     }
+
+    public static void mostrarDirectores(ArrayList<Director> directores) {
+        System.out.println("Directores existentes:");
+        for (Director d : directores) {
+            System.out.printf("ID %d: %s %s%n", d.getId(), d.getNombre(), d.getApellido());
+        }
+    }
 }

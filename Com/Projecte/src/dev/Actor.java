@@ -214,4 +214,11 @@ public class Actor extends Persona {
     
         return actores;
     }
+
+    public static void mostrarActores(ArrayList<Actor> actores) {
+        System.out.println("Actores existentes:");
+        for (Actor a : actores) {
+            System.out.printf("ID %d: %s %s%n", a.getId(), a.getNombre(), a.getApellido());
+        }
+    }
 }

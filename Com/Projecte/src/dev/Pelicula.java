@@ -59,7 +59,7 @@ public class Pelicula implements Serializable {
     }
 
     public static void crearFicheroPelicula(Pelicula pelicula) {
-        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/Peliculas.txt");
 
         try {
             if (!fichero.exists()) {
@@ -86,7 +86,7 @@ public class Pelicula implements Serializable {
         String titulo = "";
         int duracion = 0;
 
-        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/Peliculas.txt");
         int ultimaId = -1;
 
         if (fichero.exists()) {
@@ -147,7 +147,7 @@ public class Pelicula implements Serializable {
     }
 
     public static void eliminarPelicula(ArrayList<Pelicula> peliculas) {
-        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/Peliculas.txt");
         if (peliculas.isEmpty()) {
             System.out.println("No hay películas para eliminar.");
             return;
@@ -220,7 +220,7 @@ public class Pelicula implements Serializable {
 
     public static ArrayList<Pelicula> cargarPeliculas() {
         ArrayList<Pelicula> peliculas = new ArrayList<>();
-        File fichero = new File("Com/Projecte/src/dades/peliculas.txt");
+        File fichero = new File("Com/Projecte/src/dades/Peliculas.txt");
     
         if (!fichero.exists()) {
             // Si no existe el archivo, simplemente retornamos la lista vacía
@@ -254,5 +254,12 @@ public class Pelicula implements Serializable {
         }
     
         return peliculas;
+    }
+
+    public static void mostrarPeliculas(ArrayList<Pelicula> peliculas){
+        System.out.println("Películas existentes:");
+        for (Pelicula p : peliculas) {
+            System.out.printf("ID %d: %s%n", p.getId(), p.getTitol());
+        }
     }
 }

@@ -80,17 +80,23 @@ public class ProgramaPrincipal {
         System.out.println("|");
         System.out.println("|              1. Añadir Director.");
         System.out.println("|");
-        System.out.println("|              2. Eliminar Director.");
+        System.out.println("|              2. Añadir Director Personal.");
         System.out.println("|");
-        System.out.println("|              3. Añadir Pel·licula.");
+        System.out.println("|              3. Eliminar Director.");
         System.out.println("|");
-        System.out.println("|              4. Eliminar Pel·licula.");
+        System.out.println("|              4. Añadir Pel·licula.");
         System.out.println("|");
-        System.out.println("|              5. Añadir Actor.");
+        System.out.println("|              5. Añadir Pel·licula Personal.");
         System.out.println("|");
-        System.out.println("|              6. Eliminar Actor.");
+        System.out.println("|              6. Eliminar Pel·licula.");
         System.out.println("|");
-        System.out.println("|              7. Eixir.");
+        System.out.println("|              7. Añadir Actor.");
+        System.out.println("|");
+        System.out.println("|              8. Añadir Actor Personal.");
+        System.out.println("|");
+        System.out.println("|              9. Eliminar Actor.");
+        System.out.println("|");
+        System.out.println("|              10. Eixir.");
         System.out.println("|");
         System.out.println("|______________________________________________________");
         do {
@@ -104,21 +110,30 @@ public class ProgramaPrincipal {
                         Director.CrearDirector(directores);
                         break;
                     case 2:
-                        Director.eliminarDirector(directores);
+                        Usuari.añadirPersonal(usuari, peliculas, actores, directores, 2);
                         break;
                     case 3:
-                        Pelicula.afegirPelicula(peliculas);
+                        Director.eliminarDirector(directores);
                         break;
                     case 4:
-                        Pelicula.eliminarPelicula(peliculas);
+                        Pelicula.afegirPelicula(peliculas);
                         break;
                     case 5:
-                        Actor.CrearActor(actores);
+                        Usuari.añadirPersonal(usuari, peliculas, actores, directores, 0);
                         break;
                     case 6:
-                        Actor.eliminarActor(actores);
+                        Pelicula.eliminarPelicula(peliculas);
                         break;
                     case 7:
+                        Actor.CrearActor(actores);
+                        break;
+                    case 8:
+                        Usuari.añadirPersonal(usuari, peliculas, actores, directores, 1);
+                        break;
+                    case 9:
+                        Actor.eliminarActor(actores);
+                        break;
+                    case 10:
                         System.out.println("Saliendo...");
                         System.exit(opcio);
                     default:

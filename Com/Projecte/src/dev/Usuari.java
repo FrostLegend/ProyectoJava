@@ -196,4 +196,87 @@ public class Usuari extends Persona {
 
         return null;
     }
+
+    public static void añadirPersonal(Usuari usuario, ArrayList<Pelicula> peliculas, ArrayList<Actor> actores, ArrayList<Director> directores, int tipo){
+        if (tipo == 0) {
+            if (peliculas.isEmpty()) {
+            System.out.println("No hay directores disponibles.");
+            return;
+            } else {
+                Pelicula.mostrarPeliculas(peliculas);
+            }
+        }
+
+        if (tipo == 1) {
+            if (actores.isEmpty()) {
+            System.out.println("No hay directores disponibles.");
+            return;
+            } else {
+                Actor.mostrarActores(actores);
+            }
+        }
+
+        if (tipo == 2) {
+            if (directores.isEmpty()) {
+            System.out.println("No hay directores disponibles.");
+            return;
+            } else {
+                Director.mostrarDirectores(directores);
+            }
+        }
+
+        String[] general = { "Peliculas", "Actores", "Directores" };
+        String[] personal = { "peliculasfavoritas", "actoresfavoritos", "directoresfavoritos" };
+
+        System.out.print("Introduce el ID a seleccionar (o -1 para cancelar): ");
+        int id;
+        try {
+            id = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+        if (id == -1) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
+
+        File ficheroGeneral = new File("Com/Projecte/src/dades/" + general[tipo] + ".txt");
+        File ficheroPersonal = new File("Com/Projecte/src/dades_" + usuario.getEmail() + "/" + personal[tipo] + ".txt");
+
+        boolean encontrado = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(ficheroGeneral))) {
+           String linea;
+           while ((linea = br.readLine()) != null) {
+                if (!linea.trim().isEmpty()) {
+                    String[] partes = linea.split(";");
+                    if (partes.length > 0 && partes[0].equals(id + "")) {
+                        try {
+                            try (BufferedWriter out = new BufferedWriter(new FileWriter(ficheroPersonal, true))) {
+                                out.write(linea);
+                                out.newLine();
+                                encontrado = true;
+                                break;
+                            }
+                        } catch (IOException e) {
+                            System.out.println("Error al escribir en el archivo: " + e.getMessage());
+                        } catch (Exception e) {
+                            System.out.println("Error inesperado: " + e.toString());
+                        }
+                    }
+                }
+           }
+
+           if (encontrado) {
+            System.out.println(general[tipo] + " añadido correctamente al archivo.");
+           } else{
+            System.out.println(general[tipo] + " No encontrado."); 
+           }
+        } catch (IOException e) {
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.toString());
+        }
+    }
 }
