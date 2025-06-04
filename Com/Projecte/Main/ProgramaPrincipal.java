@@ -17,6 +17,7 @@ public class ProgramaPrincipal {
     static ArrayList<Usuari> usuarios = new ArrayList<>();
 
     public static void main(String[] args) {
+        Pelicula.mostrarPeliculas(peliculas);
         inici();
         menuAcces();
     }
@@ -52,7 +53,11 @@ public class ProgramaPrincipal {
                     case 1:
                         Usuari usuari = Usuari.login();
                         if (usuari != null) {
-                            menuLogin(usuari);
+                            if (usuari.getRol()) {
+                                menuLoginAdmin(usuari);
+                            } else {
+                                menuLoginUsuari(usuari);
+                            }
                         }
                         break;
                     case 2:
@@ -72,7 +77,66 @@ public class ProgramaPrincipal {
         } while (true);
     }
 
-    public static void menuLogin(Usuari usuari) {
+    public static void menuLoginAdmin(Usuari usuari) {
+        System.out.println("|");
+        System.out.println("|");
+        System.out.println("|     BENVINGUT " + usuari.getNombre() + "! Tria una opció:");
+        System.out.println("|");
+        System.out.println("|              1. Añadir Director.");
+        System.out.println("|");
+        System.out.println("|              2. Eliminar Director.");
+        System.out.println("|");
+        System.out.println("|              3. Añadir Pel·licula.");
+        System.out.println("|");
+        System.out.println("|              4. Eliminar Pel·licula.");
+        System.out.println("|");
+        System.out.println("|              5. Añadir Actor.");
+        System.out.println("|");
+        System.out.println("|              6. Eliminar Actor.");
+        System.out.println("|");
+        System.out.println("|              7. Eixir.");
+        System.out.println("|");
+        System.out.println("|______________________________________________________");
+        do {
+            int opcio;
+            String input = sc.nextLine();
+            try {
+                opcio = Integer.parseInt(input);
+
+                switch (opcio) {
+                    case 1:
+                        Director.CrearDirector(directores);
+                        menuLoginAdmin(usuari);
+                    case 2:
+                        Usuari.añadirPersonal(usuari, peliculas, actores, directores, 2);
+                        menuLoginAdmin(usuari);
+                    case 3:
+                        Pelicula.CrearPelicula(peliculas);
+                        menuLoginAdmin(usuari);
+                    case 4:
+                        Pelicula.eliminarPelicula(peliculas);
+                        menuLoginAdmin(usuari);
+                    case 5:
+                        Actor.CrearActor(actores);
+                        menuLoginAdmin(usuari);
+                    case 6:
+                        Actor.eliminarActor(actores);
+                        menuLoginAdmin(usuari);
+                    case 7:
+                        System.out.println("Saliendo...");
+                        menuAcces();
+                    default:
+                        System.out.println("No es una opción válida");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor ingrese un número.");
+            }
+
+        } while (true);
+    }
+
+    public static void menuLoginUsuari(Usuari usuari) {
         System.out.println("|");
         System.out.println("|");
         System.out.println("|     BENVINGUT " + usuari.getNombre() + "! Tria una opció:");
@@ -81,19 +145,19 @@ public class ProgramaPrincipal {
         System.out.println("|");
         System.out.println("|              2. Añadir Director Personal.");
         System.out.println("|");
-        System.out.println("|              3. Eliminar Director.");
+        System.out.println("|              3. Eliminar Director Personal.");
         System.out.println("|");
         System.out.println("|              4. Añadir Pel·licula.");
         System.out.println("|");
         System.out.println("|              5. Añadir Pel·licula Personal.");
         System.out.println("|");
-        System.out.println("|              6. Eliminar Pel·licula.");
+        System.out.println("|              6. Eliminar Pel·licula Personal.");
         System.out.println("|");
         System.out.println("|              7. Añadir Actor.");
         System.out.println("|");
         System.out.println("|              8. Añadir Actor Personal.");
         System.out.println("|");
-        System.out.println("|              9. Eliminar Actor.");
+        System.out.println("|              9. Eliminar Actor Personal.");
         System.out.println("|");
         System.out.println("|              10. Eixir.");
         System.out.println("|");
@@ -107,34 +171,34 @@ public class ProgramaPrincipal {
                 switch (opcio) {
                     case 1:
                         Director.CrearDirector(directores);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 2:
                         Usuari.añadirPersonal(usuari, peliculas, actores, directores, 2);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 3:
                         Director.eliminarDirector(directores);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 4:
                         Pelicula.CrearPelicula(peliculas);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 5:
                         Usuari.añadirPersonal(usuari, peliculas, actores, directores, 0);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 6:
                         Pelicula.eliminarPelicula(peliculas);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 7:
                         Actor.CrearActor(actores);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 8:
                         Usuari.añadirPersonal(usuari, peliculas, actores, directores, 1);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 9:
                         Actor.eliminarActor(actores);
-                        break;
+                        menuLoginUsuari(usuari);
                     case 10:
                         System.out.println("Saliendo...");
-                        System.exit(opcio);
+                        menuAcces();
                     default:
                         System.out.println("No es una opción válida");
                 }

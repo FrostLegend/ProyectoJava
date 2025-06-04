@@ -238,11 +238,11 @@ public class Pelicula implements Serializable {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;  // ignorar líneas vacías
                 String[] partes = line.split(";");
-                if (partes.length >= 5) {  
+                if (partes.length >= 4) {  
                     try {
                         int id = Integer.parseInt(partes[0]);
-                        int año = Integer.parseInt(partes[1]);
-                        String titulo = partes[2];
+                        String titulo = partes[1];
+                        int año = Integer.parseInt(partes[2]);
                         int duracion = Integer.parseInt(partes[3]);
     
                         Pelicula pelicula = new Pelicula(año, titulo, duracion, id);

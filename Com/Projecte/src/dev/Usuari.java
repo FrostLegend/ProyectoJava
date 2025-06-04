@@ -28,6 +28,10 @@ public class Usuari extends Persona {
 
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fichero, true))) {
                 String linea = usuario.toStringPaFicherosUsuarios();
+                if (fichero.length()==0) {
+                    out.write("0;Administrador;privado;admin@gmail.com;admin1234;privado;true;1999");
+                    out.newLine();
+                }
                 out.write(linea);
                 out.newLine();
                 System.out.println("Usuario añadido correctamente al archivo.");
@@ -68,7 +72,7 @@ public class Usuari extends Persona {
 
     public static ArrayList<Usuari> crearUsuari(ArrayList<Usuari> usuaris) {
         File fichero = new File("Com/Projecte/src/dades/Usuarios.txt");
-        int ultimaId = -1;
+        int ultimaId = 0;
 
         if (fichero.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
@@ -200,7 +204,7 @@ public class Usuari extends Persona {
     public static void añadirPersonal(Usuari usuario, ArrayList<Pelicula> peliculas, ArrayList<Actor> actores, ArrayList<Director> directores, int tipo){
         if (tipo == 0) {
             if (peliculas.isEmpty()) {
-            System.out.println("No hay directores disponibles.");
+            System.out.println("No hay peliculas disponibles.");
             return;
             } else {
                 Pelicula.mostrarPeliculas(peliculas);
@@ -209,7 +213,7 @@ public class Usuari extends Persona {
 
         if (tipo == 1) {
             if (actores.isEmpty()) {
-            System.out.println("No hay directores disponibles.");
+            System.out.println("No hay actores disponibles.");
             return;
             } else {
                 Actor.mostrarActores(actores);
