@@ -1,3 +1,0 @@
-1;pepe;garcia;buñol;2000
-3;luis;aragaones;villalba;2003
-4;lolo;putamadere;bibi;2000
